@@ -1,0 +1,12 @@
+# Object file
+*.o
+
+# Ada Library Information
+*.ali
+
+# Eclipse files
+.project
+.classpath
+.settings/
+target/
+
