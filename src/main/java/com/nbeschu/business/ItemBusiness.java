@@ -9,7 +9,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.nbeschu.database.ItemDaoFactory;
 import com.nbeschu.model.Item;
+import com.nbeschu.model.ItemTag;
 
 /**
  * Business pour la gestion de la ludothèque
@@ -23,7 +25,7 @@ import com.nbeschu.model.Item;
  */
 
 /**
- * Classe business de récupère de la ludothèque
+ * Classe business de récupèration de la ludothèque
  * @author nbeschu
  *
  */
@@ -35,16 +37,10 @@ public class ItemBusiness {
 	 * @return l'ensemble des items de la ludothèque
 	 */
 	@GET
-	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+	@Produces({MediaType.APPLICATION_JSON})
 	public List<Item> getItem() {
 		
-		List<Item> result = new ArrayList<>();
-		
-		Item item1 = new Item ("toto", "je suis l'item toto");
-		Item item2 = new Item ("tata", "je suis l'item tata");
-
-		result.add(item1);
-		result.add(item2);
+		List<Item> result = ItemDaoFactory.getItems();
 		
 		return result;
 	}
@@ -56,16 +52,19 @@ public class ItemBusiness {
 	 */
 	@Path("{tag}")
 	@GET
-	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-	public List<Item> getItem(@PathParam("tag") String tag) {
-		
+	@Produces({MediaType.APPLICATION_JSON})
+	public List<Item> getItem(@PathParam("tag") ItemTag tag) {		
 		List<Item> result = new ArrayList<>();
 		
-		Item item1 = new Item ("toto", "je suis l'item toto de tag " + tag);
-		Item item2 = new Item ("tata", "je suis l'item tata de tag " + tag);
+		Item item1 = new Item ("toto", "je suis l'item toto de tag " + tag, "", tag);
+		Item item2 = new Item ("tata", "je suis l'item tata de tag " + tag, "", tag);
 
 		result.add(item1);
 		result.add(item2);
+     
+		//Appel au DAO pour sauver en BDD
+        ItemDaoFactory.insertItem(item1);
+        ItemDaoFactory.insertItem(item2);
 		
 		return result;
 	}
