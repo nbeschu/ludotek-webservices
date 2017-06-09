@@ -1,13 +1,16 @@
 package com.nbeschu.business;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.nbeschu.database.ItemDaoFactory;
 import com.nbeschu.model.Item;
@@ -30,7 +33,12 @@ import com.nbeschu.model.ItemTag;
  *
  */
 @Path("ressource")
-public class ItemBusiness {
+public class ItemBusiness 
+{
+	/**
+	 * Le logger
+	 */
+	private static final Logger logger = LogManager.getLogger(ItemBusiness.class.getName());
 	
 	/**
 	 * récupère l'ensemble des items de la ludothèque
@@ -38,9 +46,13 @@ public class ItemBusiness {
 	 */
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public List<Item> getItem() {
+	public List<Item> getItem() 
+	{
+		logger.traceEntry();
 		
 		List<Item> result = ItemDaoFactory.getItems();
+		
+		logger.traceExit();
 		
 		return result;
 	}
@@ -53,19 +65,31 @@ public class ItemBusiness {
 	@Path("{tag}")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public List<Item> getItem(@PathParam("tag") ItemTag tag) {		
-		List<Item> result = new ArrayList<>();
+	public List<Item> getItem(@PathParam("tag") ItemTag tag) 
+	{		
+		logger.traceEntry();
 		
-		Item item1 = new Item ("toto", "je suis l'item toto de tag " + tag, "", tag);
-		Item item2 = new Item ("tata", "je suis l'item tata de tag " + tag, "", tag);
-
-		result.add(item1);
-		result.add(item2);
-     
-		//Appel au DAO pour sauver en BDD
-        ItemDaoFactory.insertItem(item1);
-        ItemDaoFactory.insertItem(item2);
+		List<Item> result = ItemDaoFactory.getItemsByTag(tag);
+		
+		logger.traceExit();
 		
 		return result;
+	}
+	
+	/**
+	 * Ajoute un nouvel item à la ludothèque
+	 * @param tag : l'item à ajouter
+	 * @return l'item ajouté
+	 */
+	@POST
+	@Produces({MediaType.APPLICATION_JSON})
+	public Item AddItem(Item item) 
+	{		
+		logger.traceEntry();
+		
+		Item result = ItemDaoFactory.insertItem(item);
+		
+		logger.traceExit();
+        return result;
 	}
 }
